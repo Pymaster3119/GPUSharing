@@ -18,22 +18,21 @@ def animate_move(frame, target_x, target_y):
 def reorder_frames():
     frames.sort(key=lambda frame: frame.winfo_x())
     for idx, frame in enumerate(frames):
-        animate_move(frame, idx*80, 10)
+        animate_move(frame, idx*160, 10)
 
 class DraggableFrame(Frame):
     def __init__(self, parent, *args, **kwargs):
-        self.type = StringVar(self)
-        self.arg1 = StringVar()
-        self.arg2 = StringVar()
-        Label(super(), text="Type of layer:").grid(row=0, column=0)
-        Label(super(), textvariable=self.type).grid(row=1, column=0)
-        Label(super(), text="Input Size:").grid(row=0, column=1)
-        Label(super(), textvariable=self.arg1).grid(row=1, column=1)
-        Label(super(), text="Output Size:").grid(row=0, column=2)
-        Label(super(), textvariable=self.arg1).grid(row=1, column=2)
         super().__init__(parent, *args, **kwargs)
+        self.type = StringVar(value=f"Type {len(frames) + 1}")
+        self.arg1 = StringVar(value=f"Input {len(frames) + 1}")
+        self.arg2 = StringVar(value=f"Output {len(frames) + 1}")
+        Label(self, text="Type of layer:").grid(row=0, column=0)
+        Entry(self, textvariable=self.type).grid(row=0, column=1)
+        Label(self, text="Input Size:").grid(row=1, column=0)
+        Entry(self, textvariable=self.arg1).grid(row=1, column=1)
+        Label(self, text="Output Size:").grid(row=2, column=0)
+        Entry(self, textvariable=self.arg2).grid(row=2, column=1)
         for child in self.winfo_children():
-            child.pack(expand=True, fill=BOTH)
             child.bind("<Button-1>", self.on_click)
             child.bind("<B1-Motion>", self.on_drag)
             child.bind("<ButtonRelease-1>", self.on_release)
@@ -52,18 +51,20 @@ class DraggableFrame(Frame):
 
     def _lock_to_grid(self):
         x = self.winfo_x()
-        new_x = round(x / 80) * 80
+        new_x = round(x / 160) * 160
         self.place(x=new_x, y=10)
         reorder_frames()
 
 root = Tk()
 frames = []
 for i in range(10):
-    frame = DraggableFrame(root)
-    frame.place(x=i*80, y=10)
+    frame = DraggableFrame(root, width = 160, height = 160)
+    frame.place(x=i*160, y=10)
     frames.append(frame)
 
 def savelayers(layers):
+    for i in frames:
+        layers.append(main.AILayer(i.type, i.arg1, i.arg2))
     with open("Model", "wb") as txt:
         pickle.dump(layers, txt)
 root.protocol("WM_DELETE_WINDOW", lambda: savelayers(layers))
