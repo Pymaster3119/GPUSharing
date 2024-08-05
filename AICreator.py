@@ -16,6 +16,5 @@ Button(root, text= "Create value", command= lambda: layers.append(main.AILayer(t
 def savelayers(layers):
     with open("Model", "wb") as txt:
         pickle.dump(layers, txt)
-    root.destroy()
 root.protocol("WM_DELETE_WINDOW", lambda: savelayers(layers))
 root.mainloop()
