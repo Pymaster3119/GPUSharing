@@ -3,6 +3,8 @@ import pickle
 layers = []
 
 from tkinter import *
+from tkinter import ttk
+import tkscrolledframe
 
 def animate_move(frame, target_x, target_y):
     x, y = frame.winfo_x(), frame.winfo_y()
@@ -58,16 +60,21 @@ class DraggableFrame(Frame):
 
 root = Tk()
 frames = []
+masterframe = tkscrolledframe.ScrolledFrame(root)
+masterframe.grid(row=0, column=0, sticky="nsew")
+masterframe.grid_rowconfigure(0, weight=1)
+masterframe.grid_columnconfigure(0, weight=1)
+subframe = masterframe.display_widget(Frame)
 for idx in range(4):
-    frame = DraggableFrame(root, width = 320, height = 320)
+    frame = DraggableFrame(subframe, width = 320, height = 320)
     frame.grid(row=0, column=idx)
     frames.append(frame)
 
 def addlayer():
-    frame = DraggableFrame(root, width = 320, height = 320)
+    frame = DraggableFrame(subframe, width = 320, height = 320)
     frame.grid(row=0, column=len(frames))
     frames.append(frame)
-Button(root, text="Add Layer", command=addlayer).grid(row=1, column=0, columnspan=100)
+Button(subframe, text="Add Layer", command=addlayer).grid(row=1, column=0, columnspan=100)
 def savelayers(layers):
     for i in frames:
         layers.append(main.AILayer(i.type, i.arg1, i.arg2))
