@@ -15,6 +15,14 @@ class ImageTransform():
     def __init__(self, args):
         transformstring = "transforms.Compose(["
         for i in args.keys():
-            transformstring+= "transforms." + i.get() + "(" + args[i].get() + "),"
+            transformstring+= "transforms." + i + "(" + args[i] + "),"
         transformstring += "])"
         self.transform = eval(transformstring)
+
+transformlist = [
+    "ToTensor", "Normalize", "Resize", "Scale", "CenterCrop", "Pad", "Lambda", "RandomApply",
+    "RandomChoice", "RandomOrder", "RandomCrop", "RandomHorizontalFlip", "RandomVerticalFlip", "RandomResizedCrop","RandomRotation","RandomAffine",
+    "Grayscale", "ColorJitter", "RandomErasing", "GaussianBlur", "RandomPerspective", "RandomInvert", "RandomPosterize", "RandomSolarize",
+    "RandomAdjustSharpness", "RandomAutocontrast", "RandomEqualize", "FiveCrop", "TenCrop", "LinearTransformation", "ElasticTransform", "ToPILImage",
+    "AutoAugment", "RandAugment", "TrivialAugmentWide", "AugMix"
+]
