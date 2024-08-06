@@ -15,6 +15,6 @@ class ImageTransform():
     def __init__(self, args):
         transformstring = "transforms.Compose(["
         for i in args.keys():
-            transformstring+= "transforms." + i + "(" + args[i] + "),"
+            transformstring+= "transforms." + i.get() + "(" + args[i].get() + "),"
         transformstring += "])"
         self.transform = eval(transformstring)
