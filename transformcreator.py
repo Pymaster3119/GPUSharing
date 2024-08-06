@@ -1,23 +1,19 @@
 from tkinter import *
-import tkscrolledframe
-from tkinter import ttk
-import main
 import pickle
-
+import main
 root = Tk()
 
 Label(root, text="Transform").pack()
 vars = {}
 layers = []
-masterframe = tkscrolledframe.ScrolledFrame(root)
-masterframe.pack()
-frame = masterframe.display_widget(Frame)
+frame = Frame(root)
+frame.pack(fill=BOTH, expand=True)
 rownum = 0
 
 def addLayer():
     global layers, rownum
-    frametemp = DraggableFrame(frame)
-    frametemp.pack()
+    frametemp = DraggableFrame(frame, rownum)
+    frametemp.place(x=10, y=rownum*80)
     layers.append(frametemp)
     rownum += 1
 
@@ -38,19 +34,24 @@ def reorder_frames():
         animate_move(frame, 10, idx*80)
 
 class DraggableFrame(Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, row, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.name = StringVar()
+        self.row = row
+        self.type = StringVar()
         self.args = StringVar()
-        Label(self, text="Name of layer:").grid(row=0, column=0)
-        OptionMenu(self, self.name, *main.transformlist).grid(row=0, column=1)
-        Label(self, text="Arguments to layer:").grid(row=0, column=2)
-        Entry(self, textvariable=self.args).grid(row=0, column=3)
+        self.init_ui()
         for child in self.winfo_children():
             child.bind("<Button-1>", self.on_click)
             child.bind("<B1-Motion>", self.on_drag)
             child.bind("<ButtonRelease-1>", self.on_release)
         self.parent = parent
+
+    def init_ui(self):
+        Label(self, text=f"Layer {self.row} Type: ").place(x=0, y=0, width=120)
+        OptionMenu(self, self.type, *main.transformlist).place(x=120, y=0, width=120)
+        Label(self, text=f"Layer {self.row} Type: ").place(x=240, y=0, width=120)
+        Entry(self, textvariable=self.args).place(x=360, y=0, width=120)
+        self.config(width=480, height=30, bd=1, relief="solid")
 
     def on_click(self, event):
         self._drag_data = {"x": event.x, "y": event.y}
@@ -74,11 +75,11 @@ Button(root, text="Add Transform Layer", command=addLayer).pack()
 def savetransform(vars):
     try:
         for i in layers:
-            vars[i.name.get()] = i.args.get()
+            vars[i.type.get()] = i.args.get()
         list = [main.ImageTransform(vars)]
         with open("ModelTransform", "wb") as txt:
             pickle.dump(list, txt)
-    except:
+    except Exception as e:
         pass
     root.destroy()
 
