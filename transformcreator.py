@@ -3,6 +3,7 @@ import tkscrolledframe
 from tkinter import ttk
 import main
 import pickle
+
 root = Tk()
 
 Label(root, text="Transform").pack()
@@ -10,14 +11,16 @@ vars = {}
 layers = []
 masterframe = tkscrolledframe.ScrolledFrame(root)
 masterframe.pack()
-frame =masterframe.display_widget(Frame)
+frame = masterframe.display_widget(Frame)
 rownum = 0
+
 def addLayer():
     global layers, rownum
     frametemp = DraggableFrame(frame)
-    frametemp.grid(row=rownum, column=0)
+    frametemp.pack()
     layers.append(frametemp)
     rownum += 1
+
 def animate_move(frame, target_x, target_y):
     x, y = frame.winfo_x(), frame.winfo_y()
     dx = (target_x - x) / 5
@@ -29,7 +32,7 @@ def animate_move(frame, target_x, target_y):
         frame.update()
         root.after(5)
 
-def reorder_layers():
+def reorder_frames():
     layers.sort(key=lambda frame: frame.winfo_y())
     for idx, frame in enumerate(layers):
         animate_move(frame, 10, idx*80)
@@ -39,10 +42,10 @@ class DraggableFrame(Frame):
         super().__init__(parent, *args, **kwargs)
         self.name = StringVar()
         self.args = StringVar()
-        Label(self, text= "Name of layer:").grid(row=rownum, column=0)
-        OptionMenu(self, self.name, *main.transformlist).grid(row=rownum, column=1)
-        Label(self, text= "Arguments to layer:").grid(row=rownum, column=2)
-        Entry(self, textvariable= self.args).grid(row=rownum, column=3)
+        Label(self, text="Name of layer:").grid(row=0, column=0)
+        OptionMenu(self, self.name, *main.transformlist).grid(row=0, column=1)
+        Label(self, text="Arguments to layer:").grid(row=0, column=2)
+        Entry(self, textvariable=self.args).grid(row=0, column=3)
         for child in self.winfo_children():
             child.bind("<Button-1>", self.on_click)
             child.bind("<B1-Motion>", self.on_drag)
@@ -64,9 +67,9 @@ class DraggableFrame(Frame):
         y = self.winfo_y()
         new_y = round(y / 80) * 80
         self.place(x=10, y=new_y)
-        reorder_layers()
+        reorder_frames()
 
-Button(root, text= "Add Transform Layer", command= addLayer).pack()
+Button(root, text="Add Transform Layer", command=addLayer).pack()
 
 def savetransform(vars):
     try:
@@ -80,6 +83,4 @@ def savetransform(vars):
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", lambda: savetransform(vars))
-
-
 root.mainloop()

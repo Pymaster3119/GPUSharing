@@ -1,11 +1,11 @@
-import tkinter as tk
+from tkinter import *
 
-class DraggableFrame(tk.Frame):
+class DraggableFrame(Frame):
     def __init__(self, parent, labels, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         for text in labels:
-            label = tk.Label(self, text=text)
-            label.pack(expand=True, fill=tk.BOTH)
+            label = Label(self, text=text)
+            label.pack(expand=True, fill=BOTH)
             label.bind("<Button-1>", self.on_click)
             label.bind("<B1-Motion>", self.on_drag)
             label.bind("<ButtonRelease-1>", self.on_release)
@@ -28,13 +28,13 @@ class DraggableFrame(tk.Frame):
         self.place(x=10, y=new_y)
         reorder_frames()
 
-root = tk.Tk()
+root = Tk()
 root.title("Draggable Frames")
 root.geometry("150x800")
 frames = []
 
 for i in range(10):
-    frame = DraggableFrame(root, labels=[f"Frame {i+1}", f"Label {i+1}.1", f"Label {i+1}.2"], width=120, height=80, bd=1, relief=tk.SOLID)
+    frame = DraggableFrame(root, labels=[f"Frame {i+1}", f"Label {i+1}.1", f"Label {i+1}.2"], width=120, height=80, bd=1, relief=SOLID)
     frame.place(x=10, y=i*80)
     frames.append(frame)
 
