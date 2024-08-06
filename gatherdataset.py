@@ -1,6 +1,7 @@
 from tkinter import *
 import tkscrolledframe
 from tkinter import filedialog
+import pickle
 root = Tk()
 masterframe = tkscrolledframe.ScrolledFrame(root)
 masterframe.pack()
@@ -15,4 +16,8 @@ def addPath():
     Label(frame, text=paths).grid(row=pathnumber, column=1)
     paths.append(filename)
 Button(root, text="Add new type", command=addPath).pack()
+def save():
+    with open("paths", "wb") as txt:
+        pickle.dump(paths, txt)
+root.protocol("WM_DELETE_WINDOW", save)
 root.mainloop()
