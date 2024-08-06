@@ -1,27 +1,11 @@
-from tkinter import *
+import tkinter as tk
 
-def animate_move(frame, target_x, target_y):
-    x, y = frame.winfo_x(), frame.winfo_y()
-    dx = (target_x - x) / 5
-    dy = (target_y - y) / 5
-    for _ in range(5):
-        x += dx
-        y += dy
-        frame.place(x=x, y=y)
-        frame.update()
-        root.after(5)
-
-def reorder_frames():
-    frames.sort(key=lambda frame: frame.winfo_x())
-    for idx, frame in enumerate(frames):
-        animate_move(frame, idx*80, 10)
-
-class DraggableFrame(Frame):
+class DraggableFrame(tk.Frame):
     def __init__(self, parent, labels, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         for text in labels:
-            label = Label(self, text=text)
-            label.pack(expand=True, fill=BOTH)
+            label = tk.Label(self, text=text)
+            label.pack(expand=True, fill=tk.BOTH)
             label.bind("<Button-1>", self.on_click)
             label.bind("<B1-Motion>", self.on_drag)
             label.bind("<ButtonRelease-1>", self.on_release)
@@ -39,19 +23,36 @@ class DraggableFrame(Frame):
         self._lock_to_grid()
 
     def _lock_to_grid(self):
-        x = self.winfo_x()
-        new_x = round(x / 80) * 80
-        self.place(x=new_x, y=10)
+        y = self.winfo_y()
+        new_y = round(y / 80) * 80
+        self.place(x=10, y=new_y)
         reorder_frames()
 
-
-root = Tk()
+root = tk.Tk()
+root.title("Draggable Frames")
+root.geometry("150x800")
 frames = []
+
 for i in range(10):
-    frame = DraggableFrame(root, labels=[f"Frame {i+1}", f"Label {i+1}.1", f"Label {i+1}.2"], width=80, height=80, bd=1, relief=SOLID)
-    frame.place(x=i*80, y=10)
+    frame = DraggableFrame(root, labels=[f"Frame {i+1}", f"Label {i+1}.1", f"Label {i+1}.2"], width=120, height=80, bd=1, relief=tk.SOLID)
+    frame.place(x=10, y=i*80)
     frames.append(frame)
 
+def animate_move(frame, target_x, target_y):
+    x, y = frame.winfo_x(), frame.winfo_y()
+    dx = (target_x - x) / 5
+    dy = (target_y - y) / 5
+    for _ in range(5):
+        x += dx
+        y += dy
+        frame.place(x=x, y=y)
+        frame.update()
+        root.after(5)
+
+
+def reorder_frames():
+    frames.sort(key=lambda frame: frame.winfo_y())
+    for idx, frame in enumerate(frames):
+        animate_move(frame, 10, idx*80)
+
 root.mainloop()
-
-
