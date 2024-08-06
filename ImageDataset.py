@@ -25,10 +25,17 @@ class ImageDataset:
                         self.labels.append(i)
                         self.imgs.append(j)
                         self.length += 1
+                        del img, img_data
                     except:
                         pass
     def __len__(self):
         return self.length
     
     def __getitem__(self, idx):
-        return 
+        img = self.imgs[idx]
+        label = self.labels[idx]
+        img_data = zip.open(img)
+        img = Image.open(BytesIO(img_data))
+        img = img.convert("RGB")
+        img = self.transform(img)
+        return img, label
