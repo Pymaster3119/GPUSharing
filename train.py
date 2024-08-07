@@ -39,3 +39,45 @@ num_epochs = 100
 train_losses = []
 val_losses = []
 
+for epoch in range(num_epochs):
+        print(f"Epoch {epoch+1}/{num_epochs} started")
+        model.train()
+        running_loss = 0.0
+
+        for images, labels in tqdm(train_loader, desc="Training"):
+            images, labels = images.to(device, dtype=torch.float32), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+
+        train_loss = running_loss / len(train_loader)
+        train_losses.append(train_loss)
+        print("Training ended for epoch", epoch + 1)
+
+        # Validation
+        model.eval()
+        val_loss = 0.0
+        correct = 0
+        total = 0
+        print("Evaluation started")
+        with torch.no_grad():
+            for images, labels in tqdm(val_loader, desc="Evaluating"):
+                images, labels = images.to(device, dtype=torch.float32), labels.to(device)
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                val_loss += loss.item()
+
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+        print("Evaluation ended")
+
+        val_loss /= len(val_loader)
+        val_losses.append(val_loss)
+        accuracy = 100 * correct / total
+
+        print(f'Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, Accuracy: {accuracy:.2f}%')
+        torch.save(model.state_dict(), 'model' + str(epoch) + '.pth')
