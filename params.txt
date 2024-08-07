@@ -1,0 +1,3 @@
+Learningrate: 0.01
+Epocs: 100
+Batchsize: 16
